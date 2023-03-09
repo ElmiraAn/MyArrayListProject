@@ -20,7 +20,7 @@ class MyArrayListTest {
         myArrayList1.add(1);
         myArrayList1.add(2);
         myArrayList1.add(3);
-        myArrayList1.add(1,100);
+        myArrayList1.add(1, 100);
         assertEquals(4, myArrayList1.size());
         MyArrayList expectedList = new MyArrayList<>();
         expectedList.add(1);
@@ -48,8 +48,8 @@ class MyArrayListTest {
         MyArrayList myArrayList1 = new MyArrayList();
         myArrayList1.add(1);
         myArrayList1.add(2);
-        assertEquals(1,myArrayList1.get(0));
-        assertEquals(2,myArrayList1.get(1));
+        assertEquals(1, myArrayList1.get(0));
+        assertEquals(2, myArrayList1.get(1));
     }
 
     @Test
@@ -59,8 +59,8 @@ class MyArrayListTest {
         myArrayList1.add(2);
         myArrayList1.add(3);
         MyArrayList myArrayList2 = new MyArrayList();
-        assertEquals(3,myArrayList1.size());
-        assertEquals(0,myArrayList2.size());
+        assertEquals(3, myArrayList1.size());
+        assertEquals(0, myArrayList2.size());
     }
 
     @Test
@@ -69,8 +69,8 @@ class MyArrayListTest {
         myArrayList1.add(1);
         myArrayList1.add(2);
         myArrayList1.clear();
-        assertEquals(null,myArrayList1.get(0));
-        assertEquals(null,myArrayList1.get(1));
+        assertEquals(null, myArrayList1.get(0));
+        assertEquals(null, myArrayList1.get(1));
     }
 
 
@@ -113,5 +113,15 @@ class MyArrayListTest {
         assertEquals(1, myArrayList1.iterator().next());
         myArrayList1.remove(0);
         assertEquals(false, myArrayList1.iterator().hasNext());
+    }
+
+    @Test
+    void testIncreaseCapacity() {
+        MyArrayList<Object> objects = new MyArrayList<>();
+
+        for (int i = 0; i < 1000; i++) {
+            objects.add(0, new Object());
+        }
+        assertEquals(1000, objects.size());
     }
 }

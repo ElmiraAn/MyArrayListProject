@@ -3,38 +3,57 @@ package org.example.my_arrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+
 /**
  * Here is my ArrayList implemented
- *
  * Please see the {@link MyList} interface
- * @author Elmira Antipina
  *
+ * @author Elmira Antipina
  */
 public class MyArrayList<E> implements MyList<E>, Comparator<E> {
 
     private E[] values;
+    private int capacity = 0;
+    private final int CAPACITY = 10;
+    private int size = 0;
 
     public MyArrayList() {
-        values = (E[]) new Object[0];
+        values = (E[]) new Object[CAPACITY];
     }
+
+    public MyArrayList(int capacity) {
+        this.capacity = capacity;
+        values = (E[]) new Object[capacity];
+    }
+
     /**
      * <p>Appends the specified element to the end of this list.
      * </p>
+     *
      * @return the amount of health hero has after attack
      */
     @Override
     public boolean add(E e) {
-        try {
-            E[] temp = values;
-            values = (E[]) new Object[temp.length + 1];
-            System.arraycopy(temp, 0, values, 0, temp.length);
-            values[values.length - 1] = e;
-            return true;
-        } catch (ClassCastException ex) {
-            ex.printStackTrace();
+        if (size >= capacity) {
+            increaseCapacity();
         }
-        return false;
+        values[size++] = (E) e;
+        return true;
     }
+    /**
+     * <p>Method for calculating new capacity if there is not enough space in the array
+     * </p>
+     */
+    private void increaseCapacity() {
+        capacity = capacity * 3 / 2 + 1;
+        E[] array = (E[]) new Object[capacity];
+        for (int i = 0; i < size; i++) {
+            array[i] = values[i];
+            values[i] = null;
+        }
+        values = array;
+    }
+
     /**
      * <p>Inserts the specified element at the specified position in this list.
      * </p>
@@ -44,18 +63,20 @@ public class MyArrayList<E> implements MyList<E>, Comparator<E> {
         if (index < 0) {
             return;
         }
-        if (index > values.length) {
-            index = values.length;
+        if (size + 1 >= capacity) {
+            increaseCapacity();
         }
-        E[] temp = values;
-        values = (E[]) new Object[temp.length + 1];
-        System.arraycopy(temp, 0, values, 0, temp.length);
-        for (int i = temp.length; i >= index; i--) {
+        if (index > size) {
+            index = size;
+        }
+        for (int i = size; i > index; i--) {
             values[i] = values[i - 1];
         }
         values[index] = (E) element;
+        size++;
 
     }
+
     /**
      * <p>Removes the element at the specified position in this list.
      * </p>
@@ -63,10 +84,15 @@ public class MyArrayList<E> implements MyList<E>, Comparator<E> {
     @Override
     public void remove(int index) {
         try {
-            E[] temp = values;
-            values = (E[]) new Object[temp.length - 1];
-            System.arraycopy(temp, 0, values, 0, index);
-            System.arraycopy(temp, index + 1, values, index, values.length - index);
+            Object o = null;
+            if (index < size && index >= 0) {
+                o = get(index);
+                size--;
+                if (size != index) {
+                    System.arraycopy(values, index + 1, values, index, size - index);
+                }
+                values[size] = null;
+            }
         } catch (ClassCastException ex) {
             ex.printStackTrace();
         }
@@ -75,21 +101,26 @@ public class MyArrayList<E> implements MyList<E>, Comparator<E> {
     /**
      * <p>Method for getting an element by index.
      * </p>
+     *
      * @return Returns the element at the specified position in this list.
      */
     @Override
     public E get(int index) {
-        return values[index];
+        if (index<size && index>=0){
+            return (E) values[index];
+        }
+        return null;
     }
 
     /**
      * <p>Method for getting an element by index.
      * </p>
+     *
      * @return Returns the number of elements in this list.
      */
     @Override
     public int size() {
-        return values.length;
+        return size;
     }
 
     /**
@@ -98,17 +129,19 @@ public class MyArrayList<E> implements MyList<E>, Comparator<E> {
      */
     @Override
     public void clear() {
-        for (int i = 0; i < values.length; i++) {
+        for (int i = 0; i < size; i++) {
             values[i] = null;
         }
+        size=0;
     }
+
     /**
      * <p>Sorts this list by natural order
      * </p>
      */
     @Override
     public void sorted() {
-        quickSort(values, 0, values.length - 1);
+        quickSort(values, 0, size - 1);
     }
 
     private void quickSort(E[] arr, int begin, int end) {
@@ -148,7 +181,9 @@ public class MyArrayList<E> implements MyList<E>, Comparator<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return new ArrayListIterator<E>(values);
+        E[] array = (E[]) new Object[size];
+        System.arraycopy(values, 0, array, 0, size);
+        return new ArrayListIterator<E>(array);
     }
 
     public int compare(Object o1, Object o2) {
@@ -157,9 +192,15 @@ public class MyArrayList<E> implements MyList<E>, Comparator<E> {
 
     @Override
     public String toString() {
-        return "MyArrayList{" +
-                "values=" + Arrays.toString(values) +
-                '}';
+        StringBuilder sb = new StringBuilder("List { ");
+        for (int i=0; i<size-1;i++){
+            sb.append(values[i]+", ");
+        }
+        sb.append(values[size-1]+" }");
+        return sb.toString();
+                /*"MyArrayList{" +
+                "values=" + Arrays.toString(values.) +
+                '}';*/
     }
 
 }
